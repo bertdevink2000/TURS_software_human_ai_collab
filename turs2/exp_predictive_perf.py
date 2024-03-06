@@ -47,7 +47,7 @@ def preprocess_data(d):
     le = LabelEncoder()
     d.iloc[:, -1] = le.fit_transform(d.iloc[:, -1])
 
-    le_feature = OneHotEncoder(sparse=False, dtype=int, drop="if_binary")
+    le_feature = OneHotEncoder(sparse_output=False, dtype=int, drop="if_binary")
 
     for icol in range(d.shape[1] - 1):
         if d.iloc[:, icol].dtype == "float":
