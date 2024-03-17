@@ -173,3 +173,17 @@ class Rule:
 
         readable += "Prob: " + str(self.prob) + ", Coverage: " + str(self.coverage)
         return readable
+
+
+    def __str__(self):
+        #With the name __str__ this function will return the results when using print() on this class, rather than _print
+        feature_names = self.ruleset.data_info.feature_names
+        readable = ""
+        which_variables = np.where(self.condition_count != 0)[0]
+        for v in which_variables:
+            cut = self.condition_matrix[:, v][::-1]
+            icol_name = feature_names[v]
+            readable += "X" + str(v) + "-" + str(icol_name) + " in " + str(cut) + ";   "
+
+        readable += "Prob: " + str(self.prob) + ", Coverage: " + str(self.coverage)
+        return readable
