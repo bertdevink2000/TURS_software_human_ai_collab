@@ -82,6 +82,11 @@ class Ruleset:
         else:
             self.constraints = constraints
 
+    #adds the new methods added by the utils_visualization.py file to this class
+    from utils_visualization import visualize_as_catplot
+    from utils_visualization import probability_distribution_graph
+    from utils_visualization import visualize_as_table
+
     def add_rule(self, rule):
         self.rules.append(rule)
         self.cl_data, self.allrules_cl_data = \
@@ -257,56 +262,6 @@ class Ruleset:
         which_best_ = np.argmax([r.incl_gain_per_excl_coverage for r in rules_candidates])
         return rules_candidates[which_best_]
 
-    def __str__(self):
-        str_list = []
-        for rule in self.rules:
-            str_list.append(str(rule))
-
-        return str(str_list)
 
 
-    def get_all_rules(self, max_iter=1000, printing=True):
-        #Returns all possible rules regardless of whether they increase the MDL or not,
-        # it is an edited version of the fit function
 
-        total_cl = [self.total_cl]
-        if self.data_info.log_learning_process:
-            log_folder_name = self.data_info.log_folder_name
-
-        log_info_ruleset = ""
-        try:
-            #The try catch is added because when there are no possible rules left the code returns a ValueError,
-            # when that happens it catches the error and removes the last item in the list
-            for iter in range(max_iter):
-                if printing:
-                    print("iteration ", iter)
-                rule_to_add = self.search_next_rule(k_consecutively=5)
-                if printing:
-                    print(print_(rule_to_add))
-
-                add_to_ruleset = True
-
-                if add_to_ruleset:
-                    self.add_rule(rule_to_add)
-                    total_cl.append(self.total_cl)
-                    if self.data_info.log_learning_process:
-                        log_info_ruleset += "Add rule: " + print_(rule_to_add) + "\n\n"
-                        log_info_ruleset += "with grow process: "
-                        r = rule_to_add.rule_base
-                        while r is not None:
-                            log_info_ruleset += print_(r) + "\n"
-                            r = r.rule_base
-
-            if self.data_info.log_learning_process:
-                system_name = platform.system()
-                if system_name == "Windows":
-                    with open(log_folder_name + "\\ruleset.txt", "w") as flog_ruleset:
-                        flog_ruleset.write(log_info_ruleset)
-                else:
-                    with open(log_folder_name + "/ruleset.txt", "w") as flog_ruleset:
-                        flog_ruleset.write(log_info_ruleset)
-            return total_cl
-        except ValueError:
-            #Remove the last item in the list and print "end of process", the last item in this case is an "empty" rule.
-            self.rules = self.rules[:-1]
-            print("End of Process")
